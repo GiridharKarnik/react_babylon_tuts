@@ -2,12 +2,14 @@ import * as React from "react";
 import * as BABYLON from "babylonjs";
 
 import Wood from "../assets/textures/wood.jpg";
+import TennisTexture from "../assets/textures/tennis_ball_texture.png";
 
 class WoodenBox extends React.Component<{}, {}> {
   private canvas: any;
   private engine: any;
   private scene: any;
   private ball: any;
+  private ground: any;
 
   componentDidMount() {
     //start Engine
@@ -22,7 +24,7 @@ class WoodenBox extends React.Component<{}, {}> {
 
     this.addCamera();
 
-    this.animateBounce();
+    // this.animateBounce();
 
     // Render Loop
     this.engine.runRenderLoop(() => {
@@ -51,7 +53,7 @@ class WoodenBox extends React.Component<{}, {}> {
     let camera = new BABYLON.ArcRotateCamera(
       "arcCamera",
       BABYLON.Tools.ToRadians(0),
-      BABYLON.Tools.ToRadians(90),
+      BABYLON.Tools.ToRadians(80),
       15.0,
       new BABYLON.Vector3(0, 0, 0),
       this.scene
@@ -70,19 +72,35 @@ class WoodenBox extends React.Component<{}, {}> {
    * Add Models
    */
   addModels = () => {
+    this.createBall();
+
+    this.createGround();
+  };
+
+  createBall = () => {
     // Add BOX
     this.ball = BABYLON.MeshBuilder.CreateSphere("sphere", {}, this.scene);
     // this.ball.position.x = -20;
-    this.ball.position = new BABYLON.Vector3(0, 0, 0);
+    this.ball.position = new BABYLON.Vector3(0, 0.50, 0);
 
     //add material to the box
     //add a material to the box, apply texture maps
     let material = new BABYLON.StandardMaterial("material1", this.scene);
-    material.diffuseTexture = new BABYLON.Texture(Wood, this.scene);
+    material.diffuseTexture = new BABYLON.Texture(TennisTexture, this.scene);
 
     // material.bumpTexture = new BABYLON.Texture("")
     this.ball.material = material;
-  };
+  }
+
+  createGround = () => {
+    this.ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 5, height: 5, subdivisions: 4}, this.scene);
+
+    //add material, make the ground look like a wooden floor
+    let woodMaterial = new BABYLON.StandardMaterial("woodenMaterial", this.scene);
+    woodMaterial.diffuseTexture = new BABYLON.Texture(Wood, this.scene);
+
+    this.ground.material = woodMaterial;
+  }
 
   /**
    * This method will move the ball from point A to point B and then back to point A and then loop the movement
