@@ -4,32 +4,27 @@ import * as BABYLON from "babylonjs";
 import Wood from "../assets/textures/wood.jpg";
 import TennisTexture from "../assets/textures/tennis_ball_texture.png";
 
-class BouncingBall extends React.Component<{}, {}> {
+class WoodenBox extends React.Component<{}, {}> {
   private canvas: any;
   private engine: any;
   private scene: any;
   private ball: any;
   private ground: any;
-  private bounceAnimation: any;
 
   componentDidMount() {
-    this.engine = new BABYLON.Engine(this.canvas, true, {
-        deterministicLockstep: true,
-        lockstepMaxSteps: 4
-    });
+    //start Engine
+    this.engine = new BABYLON.Engine(this.canvas, true);
 
+    //crate scene
     this.scene = new BABYLON.Scene(this.engine);
 
-    this.enablePhysics();
-
     this.addLight();
-    this.addCamera();
 
     this.addModels();
+
+    this.addCamera();
+
     // this.animateBounce();
-
-
-    this.detectCollision();
 
     // Render Loop
     this.engine.runRenderLoop(() => {
@@ -37,6 +32,9 @@ class BouncingBall extends React.Component<{}, {}> {
     });
   }
 
+  /**
+   * Add Lights
+   */
   addLight = () => {
     //---------- LIGHT---------------------
     // Create a basic light, aiming 0,1,0 - meaning, to the sky.
@@ -47,11 +45,15 @@ class BouncingBall extends React.Component<{}, {}> {
     );
   };
 
+  /**
+   * Add Camera
+   */
   addCamera = () => {
+    // ---------------ArcRotateCamera or Orbit Control----------
     let camera = new BABYLON.ArcRotateCamera(
       "arcCamera",
-      BABYLON.Tools.ToRadians(-40),
-      BABYLON.Tools.ToRadians(45),
+      BABYLON.Tools.ToRadians(0),
+      BABYLON.Tools.ToRadians(80),
       15.0,
       new BABYLON.Vector3(0, 0, 0),
       this.scene
@@ -66,6 +68,9 @@ class BouncingBall extends React.Component<{}, {}> {
     camera.keysRight.push(68);
   };
 
+  /**
+   * Add Models
+   */
   addModels = () => {
     this.createBall();
 
@@ -73,36 +78,29 @@ class BouncingBall extends React.Component<{}, {}> {
   };
 
   createBall = () => {
+    // Add BOX
     this.ball = BABYLON.MeshBuilder.CreateSphere("sphere", {}, this.scene);
-    this.ball.position = new BABYLON.Vector3(0, 5, 0);
+    // this.ball.position.x = -20;
+    this.ball.position = new BABYLON.Vector3(0, 0.50, 0);
 
+    //add material to the box
+    //add a material to the box, apply texture maps
     let material = new BABYLON.StandardMaterial("material1", this.scene);
     material.diffuseTexture = new BABYLON.Texture(TennisTexture, this.scene);
-    this.ball.material = material;
 
-    //attach physics
-    this.ball.physicsImpostor = new BABYLON.PhysicsImpostor(this.ball, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 8, restitution: 0.9 }, this.scene);
-  };
+    // material.bumpTexture = new BABYLON.Texture("")
+    this.ball.material = material;
+  }
 
   createGround = () => {
-    this.ground = BABYLON.MeshBuilder.CreateGround(
-      "ground",
-      { width: 5, height: 5, subdivisions: 4 },
-      this.scene
-    );
+    this.ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 5, height: 5, subdivisions: 4}, this.scene);
 
     //add material, make the ground look like a wooden floor
-    let woodMaterial = new BABYLON.StandardMaterial(
-      "woodenMaterial",
-      this.scene
-    );
+    let woodMaterial = new BABYLON.StandardMaterial("woodenMaterial", this.scene);
     woodMaterial.diffuseTexture = new BABYLON.Texture(Wood, this.scene);
 
     this.ground.material = woodMaterial;
-
-    //attach physics
-    this.ground.physicsImpostor = new BABYLON.PhysicsImpostor(this.ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this.scene);
-  };
+  }
 
   /**
    * This method will move the ball from point A to point B and then back to point A and then loop the movement
@@ -120,19 +118,19 @@ class BouncingBall extends React.Component<{}, {}> {
     //At the animation key 0, the value of scaling is "1"
     animationKeys.push({
       frame: 0,
-      value: 5
+      value: 1
     });
 
     //At the animation key 20, the value of scaling is "0.2"
     animationKeys.push({
       frame: 50,
-      value: -3
+      value: -5
     });
 
     //At the animation key 100, the value of scaling is "1"
     animationKeys.push({
       frame: 100,
-      value: 5
+      value: 1
     });
 
     //add animation array to animation object
@@ -140,25 +138,8 @@ class BouncingBall extends React.Component<{}, {}> {
     bounceAnimation.setKeys(animationKeys);
     this.ball.animations.push(bounceAnimation);
 
-    this.bounceAnimation = this.scene.beginAnimation(this.ball, 0, 100, true);
+    this.scene.beginAnimation(this.ball, 0, 100, true);
   };
-
-  enablePhysics = () => {
-    var physEngine = new BABYLON.CannonJSPlugin(false);
-    this.scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), physEngine);
-    physEngine.setTimeStep(1/60);
-  }
-
-  detectCollision = () => {
-    //   this.scene.registerBeforeRender(() => {
-    //     if(this.ball.intersectsMesh(this.ground, true)) {
-    //         console.log("Ball bounced!!!");
-    //         this.bounceAnimation.stop();
-    //     } else {
-    //         this.bounceAnimation.restart();
-    //     }
-    //   });
-  }
 
   render() {
     return (
@@ -172,4 +153,4 @@ class BouncingBall extends React.Component<{}, {}> {
   }
 }
 
-export default BouncingBall;
+export default WoodenBox;
