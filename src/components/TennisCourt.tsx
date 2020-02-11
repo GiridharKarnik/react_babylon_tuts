@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as BABYLON from "babylonjs";
 
-import Wood from "../assets/textures/wood.jpg";
+import BlueCourtTexture from "../assets/textures/blue_tennis_court_texture.jpg";
 import CanvasHelper from "../utils/CanvasHelper";
 
-class WoodPlane extends React.Component {
+class TennisCourt extends React.Component {
   private canvas: any;
   private engine: any;
   private scene: any;
@@ -55,7 +55,7 @@ class WoodPlane extends React.Component {
   createGround = () => {
     this.ground = BABYLON.MeshBuilder.CreateGround(
       "ground",
-      { width: 5, height: 5, subdivisions: 4 },
+      { width: 10, height: 10, subdivisions: 100 },
       this.scene
     );
 
@@ -64,7 +64,7 @@ class WoodPlane extends React.Component {
       "woodenMaterial",
       this.scene
     );
-    woodMaterial.diffuseTexture = new BABYLON.Texture(Wood, this.scene);
+    woodMaterial.diffuseTexture = new BABYLON.Texture(BlueCourtTexture, this.scene);
 
     this.ground.material = woodMaterial;
   };
@@ -102,4 +102,4 @@ class WoodPlane extends React.Component {
   }
 }
 
-export default WoodPlane;
+export default TennisCourt;
